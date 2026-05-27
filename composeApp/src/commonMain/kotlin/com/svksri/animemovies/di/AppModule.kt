@@ -9,6 +9,9 @@ import com.svksri.animemovies.domain.usecase.SearchMoviesUseCase
 import com.svksri.animemovies.network.AnimeApiService
 import com.svksri.animemovies.network.AnimeApiServiceImpl
 import com.svksri.animemovies.network.HttpClientFactory
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.svksri.animemovies.presentation.MoviesViewModel
 import com.svksri.animemovies.validation.MovieValidator
 import io.ktor.client.HttpClient
@@ -52,11 +55,15 @@ object AppModule {
         )
     }
 
-    fun createMoviesViewModel(): MoviesViewModel {
-        return MoviesViewModel(
-            getMoviesUseCase = getMoviesUseCase,
-            searchMoviesUseCase = searchMoviesUseCase,
-            dispatcherProvider = dispatcherProvider
-        )
+    val moviesViewModelFactory: ViewModelProvider.Factory by lazy {
+        viewModelFactory {
+            initializer {
+                MoviesViewModel(
+                    getMoviesUseCase = getMoviesUseCase,
+                    searchMoviesUseCase = searchMoviesUseCase,
+                    dispatcherProvider = dispatcherProvider
+                )
+            }
+        }
     }
 }

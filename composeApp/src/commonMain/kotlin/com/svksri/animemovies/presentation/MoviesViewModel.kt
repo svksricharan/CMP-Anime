@@ -1,5 +1,7 @@
 package com.svksri.animemovies.presentation
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.svksri.animemovies.core.AppError
 import com.svksri.animemovies.core.AppResult
 import com.svksri.animemovies.core.Constants
@@ -12,10 +14,7 @@ import com.svksri.animemovies.domain.model.PagedMovies
 import com.svksri.animemovies.domain.usecase.GetMoviesUseCase
 import com.svksri.animemovies.domain.usecase.SearchMoviesUseCase
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,8 +26,7 @@ class MoviesViewModel(
     private val getMoviesUseCase: GetMoviesUseCase,
     private val searchMoviesUseCase: SearchMoviesUseCase,
     private val dispatcherProvider: DispatcherProvider
-) {
-    private val scope = CoroutineScope(SupervisorJob() + dispatcherProvider.main)
+) : ViewModel() {
     private val _uiState = MutableStateFlow<MoviesUiState>(MoviesUiState.Loading)
     private val _searchQuery = MutableStateFlow("")
     private var loadJob: Job? = null
@@ -63,7 +61,7 @@ class MoviesViewModel(
             return
         }
 
-        searchDebounceJob = scope.launch {
+        searchDebounceJob = viewModelScope.launch {
             delay(Constants.SEARCH_DEBOUNCE_MS)
             searchMovies(query)
         }
@@ -84,7 +82,7 @@ class MoviesViewModel(
 
         val nextPage = currentState.currentPage + 1
         loadJob?.cancel()
-        loadJob = scope.launch {
+        loadJob = viewModelScope.launch {
             isFetchInFlight = true
             try {
                 val result = executeFetch(isSearchActive, activeSearchQuery, nextPage)
@@ -147,12 +145,6 @@ class MoviesViewModel(
         loadNextPage()
     }
 
-    fun clear() {
-        loadJob?.cancel()
-        searchDebounceJob?.cancel()
-        scope.cancel()
-    }
-
     private fun searchMovies(query: String) {
         retryAttemptsUsed = 0
         isSearchActive = true
@@ -166,7 +158,7 @@ class MoviesViewModel(
         if (isFetchInFlight) return
 
         loadJob?.cancel()
-        loadJob = scope.launch {
+        loadJob = viewModelScope.launch {
             isFetchInFlight = true
             try {
                 _uiState.value = MoviesUiState.Loading

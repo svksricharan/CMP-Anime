@@ -27,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.svksri.animemovies.domain.model.Movie
 import com.svksri.animemovies.ui.components.MoviePoster
+import com.svksri.animemovies.ui.format.formatScore
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -128,14 +129,5 @@ fun MovieDetailScreen(
                 )
             }
         }
-    }
-}
-
-private fun formatScore(score: Double): String {
-    val rounded = ((score * 10).toInt() / 10.0)
-    return if (rounded % 1.0 == 0.0) {
-        rounded.toInt().toString()
-    } else {
-        rounded.toString()
     }
 }

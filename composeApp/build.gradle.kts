@@ -18,6 +18,7 @@ kotlin {
             baseName = "ComposeApp"
             isStatic = true
             binaryOption("bundleId", "com.svksri.animemovies.composeapp")
+            export(libs.lifecycle.viewmodel)
         }
     }
 
@@ -62,6 +63,8 @@ kotlin {
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor3)
             implementation(libs.navigation.compose)
+            api(libs.lifecycle.viewmodel)
+            implementation(libs.lifecycle.viewmodel.compose)
         }
         androidMain.dependencies {
             implementation(libs.ktor.client.android)

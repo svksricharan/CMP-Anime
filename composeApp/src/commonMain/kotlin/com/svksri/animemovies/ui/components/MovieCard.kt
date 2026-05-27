@@ -15,8 +15,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.svksri.animemovies.domain.model.Movie
+import com.svksri.animemovies.ui.format.toListSubtitle
 
 @Composable
 fun MovieCard(
@@ -25,6 +27,8 @@ fun MovieCard(
     modifier: Modifier = Modifier,
     showRankLabel: Boolean = true
 ) {
+    val subtitle = movie.toListSubtitle()
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -48,28 +52,41 @@ fun MovieCard(
                     .weight(1f)
                     .padding(start = 12.dp)
             ) {
-                Text(
-                    text = movie.rank.toString(),
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
+                if (showRankLabel) {
+                    Text(
+                        text = "#${movie.rank}",
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+
                 Text(
                     text = movie.title,
-                    modifier = Modifier.padding(top = 4.dp),
+                    modifier = Modifier.padding(top = if (showRankLabel) 4.dp else 0.dp),
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Medium
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
-                Text(
-                    text = when {
-                        showRankLabel -> "Rank #${movie.rank}"
-                        movie.malId != null -> "MAL ID ${movie.malId}"
-                        else -> "Anime movie"
-                    },
-                    modifier = Modifier.padding(top = 4.dp),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+
+                if (subtitle != null) {
+                    Text(
+                        text = subtitle,
+                        modifier = Modifier.padding(top = 6.dp),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                } else if (!showRankLabel && movie.malId != null) {
+                    Text(
+                        text = "MAL ID ${movie.malId}",
+                        modifier = Modifier.padding(top = 6.dp),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
         }
     }

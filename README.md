@@ -26,12 +26,15 @@ The same Compose Multiplatform UI on Android, iOS, and Web (Wasm).
 | Layer | Libraries |
 | --- | --- |
 | UI | Compose Multiplatform, Material 3 |
-| Navigation | `org.jetbrains.androidx.navigation:navigation-compose` |
+| ViewModel | AndroidX `ViewModel` + `lifecycle-viewmodel-compose` (KMP) |
+| Navigation | `org.jetbrains.androidx.navigation:navigation-compose` (type-safe routes) |
 | Networking | Ktor Client, kotlinx.serialization |
 | Images | Coil 3 |
 | Architecture | MVVM, repository pattern, use cases |
-| DI | Manual (`AppModule`) |
-| Async | Coroutines, `StateFlow` |
+| DI | Manual (`AppModule` + `viewModelFactory`) |
+| Async | Coroutines, `StateFlow`, `viewModelScope` |
+
+Jetpack libraries follow the [Kotlin Multiplatform + Jetpack guidance](https://developer.android.com/kotlin/multiplatform#kotlin-multiplatform-and-jetpack-libraries): shared business logic in `commonMain`, with JetBrains-packaged artifacts for Compose, Navigation, and Lifecycle on iOS/Web.
 
 **Kotlin** 2.3.21 · **Compose** 1.11 · **AGP** 9.0.1 · **minSdk** 24
 
@@ -73,6 +76,7 @@ UI (Compose) → ViewModel → Use cases → Repository → Jikan API
 - **List flow:** `GetMoviesUseCase` / `SearchMoviesUseCase` → `AnimeRepository` → `AnimeApiService`
 - **State:** `MoviesUiState` (`Loading`, `Success`, `Empty`, `Error`)
 - **Navigation:** `MoviesListRoute` and `MovieDetailRoute` in `navigation/AppRoute.kt`, registered in `navigation/AppNavGraph.kt`
+- **ViewModel scope:** `MoviesViewModel` is obtained with `viewModel(factory = …)` on the list destination so list state survives trips to the detail screen
 
 ### Adding a new screen
 
